@@ -9,6 +9,7 @@ in {
     ./clang.nix
     ./css.nix
     ./elixir.nix
+    ./elm.nix
     ./gleam.nix
     ./go.nix
     ./hcl.nix

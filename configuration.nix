@@ -80,6 +80,7 @@ isMaximal: {
       dart.enable = false;
       ocaml.enable = false;
       elixir.enable = false;
+      elm.enable = false;
       haskell.enable = false;
       ruby.enable = false;
 
