@@ -6,11 +6,9 @@
 }: let
   inherit (builtins) attrNames;
   inherit (lib.lists) isList;
-  inherit (lib.meta) getExe';
   inherit (lib.modules) mkIf mkMerge;
-  inherit (lib.nvim.languages) diagnosticsToLua;
   inherit (lib.nvim.lua) expToLua;
-  inherit (lib.nvim.types) diagnostics mkGrammarOption;
+  inherit (lib.nvim.types) mkGrammarOption;
   inherit (lib.options) mkEnableOption mkOption;
   inherit (lib.types) either enum package listOf str;
   inherit (pkgs) elmPackages;
