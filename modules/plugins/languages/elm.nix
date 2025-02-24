@@ -40,7 +40,7 @@
     };
   };
 
-  defaultFormat = "elm-format";
+  defaultFormat = "elm_format";
   formats = {
     elm_format = {
       package = elmPackages.elm-format;
@@ -51,16 +51,6 @@
             command = "${cfg.format.package}/bin/elm-format",
           })
         )
-      '';
-    };
-  };
-
-  defaultDiagnosticsProvider = ["elm_review"];
-  diagnosticsProviders = {
-    elm_review = {
-      package = elmPackages.elm-review;
-      nullConfig = pkg: ''
-        -- TODO: elm-review
       '';
     };
   };
@@ -104,16 +94,6 @@ in {
         default = formats.${cfg.format.type}.package;
       };
     };
-
-    extraDiagnostics = {
-      enable = mkEnableOption "extra Elm diagnostics" // {default = config.vim.languages.enableExtraDiagnostics;};
-
-      types = diagnostics {
-        langDesc = "Elm";
-        inherit diagnosticsProviders;
-        inherit defaultDiagnosticsProvider;
-      };
-    };
   };
 
   config = mkIf cfg.enable (mkMerge [
@@ -124,18 +104,14 @@ in {
       };
     })
 
+    (mkIf cfg.format.enable {
+      vim.lsp.null-ls.enable = true;
+      vim.lsp.null-ls.sources.elm_format = formats.${cfg.format.type}.nullConfig;
+    })
+
     (mkIf cfg.lsp.enable {
       vim.lsp.lspconfig.enable = true;
       vim.lsp.lspconfig.sources.elmls = servers.${cfg.lsp.server}.lspConfig;
-    })
-
-    (mkIf cfg.extraDiagnostics.enable {
-      vim.lsp.null-ls.enable = true;
-      vim.lsp.null-ls.sources = diagnosticsToLua {
-        lang = "elm";
-        config = cfg.extraDiagnostics.types;
-        inherit diagnosticsProviders;
-      };
     })
   ]);
 }
