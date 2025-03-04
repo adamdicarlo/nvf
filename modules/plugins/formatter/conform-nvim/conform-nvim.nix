@@ -1,12 +1,7 @@
-{
-  pkgs,
-  lib,
-  ...
-}: let
-  inherit (lib.options) mkOption mkEnableOption literalExpression;
-  inherit (lib.types) attrs enum;
-  inherit (lib.nvim.types) mkPluginSetupOption;
-  inherit (lib.nvim.lua) mkLuaInline;
+{lib, ...}: let
+  inherit (lib.options) mkOption mkEnableOption;
+  inherit (lib.types) attrs either;
+  inherit (lib.nvim.types) luaInline mkPluginSetupOption;
 in {
   options.vim.formatter.conform-nvim = {
     enable = mkEnableOption "lightweight yet powerful formatter plugin for Neovim [conform-nvim]";
@@ -31,7 +26,7 @@ in {
       };
 
       format_on_save = mkOption {
-        type = attrs;
+        type = either attrs luaInline;
         default = {
           lsp_format = "fallback";
           timeout_ms = 500;
@@ -43,7 +38,7 @@ in {
       };
 
       format_after_save = mkOption {
-        type = attrs;
+        type = either attrs luaInline;
         default = {lsp_format = "fallback";};
         description = ''
           Table that will be passed to `conform.format()`. If this
