@@ -6,6 +6,7 @@
 }: let
   inherit (builtins) attrNames;
   inherit (lib.lists) isList;
+  inherit (lib.meta) getExe;
   inherit (lib.modules) mkIf mkMerge;
   inherit (lib.nvim.lua) expToLua;
   inherit (lib.nvim.types) mkGrammarOption;
@@ -42,18 +43,9 @@
   formats = {
     elm_format = {
       package = elmPackages.elm-format;
-      nullConfig = ''
-        table.insert(
-          ls_sources,
-          null_ls.builtins.formatting.elm_format.with({
-            command = "${cfg.format.package}/bin/elm-format",
-          })
-        )
-      '';
     };
   };
 in {
-  _file = ./elm.nix;
   options.vim.languages.elm = {
     enable = mkEnableOption "Elm language support";
 
@@ -102,14 +94,19 @@ in {
       };
     })
 
-    (mkIf cfg.format.enable {
-      vim.lsp.null-ls.enable = true;
-      vim.lsp.null-ls.sources.elm_format = formats.${cfg.format.type}.nullConfig;
-    })
-
     (mkIf cfg.lsp.enable {
       vim.lsp.lspconfig.enable = true;
       vim.lsp.lspconfig.sources.elmls = servers.${cfg.lsp.server}.lspConfig;
+    })
+
+    (mkIf cfg.format.enable {
+      vim.formatter.conform-nvim = {
+        enable = true;
+        setupOpts.formatters_by_ft.css = [cfg.format.type];
+        setupOpts.formatters.${cfg.format.type} = {
+          command = getExe cfg.format.package;
+        };
+      };
     })
   ]);
 }
